@@ -19,7 +19,7 @@ if [ `lsb_release -si` == "Fedora" -o `lsb_release -si` == "CentOS" ] ; then
 	createrepo --quiet RPMS
 	echo " done"
 
-elif [ `lsb_release -si` == "Ubuntu" ] ; then
+elif [ `lsb_release -si` == "Ubuntu" -o `lsb_release -si` == "Debian" ] ; then
 
 	echo "Configuring DEB-based build"
 
