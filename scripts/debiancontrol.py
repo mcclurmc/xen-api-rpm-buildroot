@@ -6,6 +6,9 @@ import textwrap
 STANDARDS_VERSION = "3.9.3"
 
 
+extra_builddeps = {"libcohttp-ocaml":["liblwt-ssl-ocaml-dev"]}
+
+
 def control_from_spec(spec):
     res = Tree()
     source_deb_from_spec(spec, res)
@@ -15,8 +18,9 @@ def control_from_spec(spec):
 
 
 def source_deb_from_spec(spec, tree):
+    name = mappkgname.map_package(spec.sourceHeader['name'])[0]
     res = ""
-    res += "Source: %s\n" % mappkgname.map_package(spec.sourceHeader['name'])[0]
+    res += "Source: %s\n" % name
     res += "Priority: %s\n" % "optional"
     res += "Maintainer: %s\n" % "Euan Harris <euan.harris@citrix.com>"
     res += "Section: %s\n" % mappkgname.map_section(spec.sourceHeader['group'])
@@ -31,6 +35,9 @@ def source_deb_from_spec(spec, tree):
             if version:
                 dep += " (>= %s)" % version
             build_depends.append(dep)
+
+    if name in extra_builddeps:
+        build_depends += extra_builddeps[name]
 
     res += ",\n".join(set([" %s" % d for d in build_depends]))
     res += "\n\n"

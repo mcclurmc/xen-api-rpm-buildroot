@@ -92,6 +92,7 @@ MAPPING = {
     "xenserver-core-latest-snapshot": ["xenserver-core-latest-snapshot"],
     "python-setuptools": ["python-setuptools"],
     "vhd-tool": ["vhd-tool"],
+    "ocaml-vhd": ["ocaml-vhd"],
 
     # Distribution packages
     "ocaml": ["ocaml-nox", "ocaml-native-compilers"],
@@ -158,10 +159,12 @@ SECONDARY_MAPPING = {
     "libvirt-bin-dev": ["libvirt-bin"],
     "blktap-utils-dev": ["blktap-utils"],
     "qemu-system-x86-dev": ["qemu-system-x86"],
+    "xen-utils": ["xen-utils-4.3"],
 }
 
 def map_package(name):
     """map an rpm to a corresponding deb, based on file contents"""
+    print("XXX map_package %s" % (name))
     is_devel = False
     if name.endswith( "-devel" ):
         is_devel = True

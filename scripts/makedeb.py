@@ -149,11 +149,12 @@ def main():
         # (or not) source name in the debian package - build the debian
         # dir first and then rename the tarball as needed
         rename_source(spec, spec.sourceHeader['name'], 
-                      spec.sourceHeader['version']) 
+                      spec.sourceHeader['version'])
 
     debian_dir_from_spec(spec, os.path.join(BUILD_DIR, build_subdir), 
                          sys.argv[1], native)
 
+    print("XXX: cd %s\ndpkg-source -b --auto-commit %s" % (BUILD_DIR, build_subdir))
     res = subprocess.call("cd %s\ndpkg-source -b --auto-commit %s" % 
                           (BUILD_DIR, build_subdir), shell=True)
     assert res == 0

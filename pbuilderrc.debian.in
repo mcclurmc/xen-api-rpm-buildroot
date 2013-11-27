@@ -1,0 +1,11 @@
+MIRRORSITE="ftp://ftp.us.debian.org/debian/"
+OTHERMIRROR="deb file:@PWD@/RPMS/ ./|deb-src file:@PWD@/SRPMS/ ./"
+BINDMOUNTS="@PWD@/RPMS @PWD@/SRPMS"
+HOOKDIR="@PWD@/pbuilder"
+EXTRAPACKAGES="apt-utils"
+ALLOWUNTRUSTED=yes
+DISTRIBUTION=@DIST@
+
+# Architecture specific settings
+ARCHITECTURE=@ARCH@
+BASETGZ=@BASETGZ@

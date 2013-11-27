@@ -6,7 +6,7 @@ import sys
 sys.path.append("scripts")
 
 ignore_list = {"rpm":["libxl-headers","libnl3"],
-               "deb":["libnl3"]}
+               "deb":["libnl3","ocaml-lwt"]}
 
 import rpm
 import os
@@ -27,6 +27,15 @@ def buildType():
     elif distribution in rhel_like:
         return "rpm"
 
+def debianVersion():
+    assert buildType() == "deb"
+
+    dist = platform.linux_distribution()[0].lower()
+
+    if dist == "debian":
+        return "experimental" # XXX make this dynamic
+    else:
+        return "raring"
 
 # for debugging, make all paths relative to PWD
 rpm.addMacro( '_topdir', '.' )
@@ -70,7 +79,7 @@ print "all: rpms"
 if buildType() == "rpm":
     rpmfilenamepat = rpm.expandMacro( '%_build_name_fmt' )
 else:
-    rpmfilenamepat = "%{NAME}_%{VERSION}-%{RELEASE}_%{ARCH}.deb"
+    rpmfilenamepat = "%{NAME}_%{VERSION}-%{RELEASE}+xenservercore_%{ARCH}.deb"
 
 ts = rpm.TransactionSet()
 
@@ -108,7 +117,7 @@ def srpmNameFromSpec( spec ):
     if buildType() == "rpm":
         srpmname = os.path.basename( rpm.expandMacro( rpmfilenamepat ) )  
     else:
-        srpmname = os.path.basename( rpm.expandMacro( "%{NAME}_%{VERSION}-%{RELEASE}.dsc" ) )  
+        srpmname = os.path.basename( rpm.expandMacro( "%{NAME}_%{VERSION}-%{RELEASE}+xenservercore.dsc" ) )  
 
     rpm.delMacro( 'NAME' )
     rpm.delMacro( 'VERSION' )
@@ -230,7 +239,7 @@ for specname, spec in specs.iteritems():
 
         else:
             print '\t@echo [PBUILDER] $@'
-            print '\tsudo pbuilder --build --configfile pbuilder/pbuilderrc-raring-amd64 --buildresult %s $<' % rpm_outdir 
+            print '\tsudo pbuilder --build --configfile pbuilder/pbuilderrc-%s-amd64 --buildresult %s $<' % (debianVersion(), rpm_outdir)
         
 # RPM build dependencies.   The 'requires' key for the *source* RPM is
 # actually the 'buildrequires' key from the spec

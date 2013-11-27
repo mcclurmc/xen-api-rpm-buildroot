@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -x
+set -e
+
 if [ `lsb_release -si` == "Fedora" -o `lsb_release -si` == "CentOS" ] ; then
 
 	echo "Configuring RPM-based build"
@@ -19,7 +22,7 @@ if [ `lsb_release -si` == "Fedora" -o `lsb_release -si` == "CentOS" ] ; then
 	createrepo --quiet RPMS
 	echo " done"
 
-elif [ `lsb_release -si` == "Ubuntu" -o `lsb_release -si` == "Debian" ] ; then
+elif [ `lsb_release -si` == "Ubuntu" ] ; then
 
 	echo "Configuring DEB-based build"
 
@@ -50,5 +53,38 @@ elif [ `lsb_release -si` == "Ubuntu" -o `lsb_release -si` == "Debian" ] ; then
 	(cd RPMS; apt-ftparchive packages . > Packages)
 	(cd SRPMS; apt-ftparchive sources . > Sources)
 	echo " done"
+
+elif [ `lsb_release -si` == "Debian" ] ; then
+
+	echo "Configuring DEB-based build"
+
+	ARCH=amd64
+	#DIST=$(lsb_release -sc)
+	DIST=experimental
+	BASETGZ=/var/cache/pbuilder/base-$DIST-$ARCH.tgz
+
+	sudo apt-get install pbuilder python-rpm curl
+	mkdir -p BUILD
+
+	echo -n "Writing pbuilder configuration..."
+	mkdir -p pbuilder
+	sed -e "s|@PWD@|$PWD|g" -e "s|@ARCH@|$ARCH|g" -e "s|@BASETGZ@|$BASETGZ|g" -e "s|@DIST@|$DIST|g" pbuilderrc.debian.in > pbuilder/pbuilderrc-$DIST-$ARCH
+	sed -e "s|@PWD@|$PWD|g" D05deps.in > pbuilder/D05deps
+	chmod 755 pbuilder/D05deps
+	echo " done"
+
+	echo -n "Initializing repository..."
+	mkdir -p RPMS SRPMS
+	(cd RPMS; apt-ftparchive packages . > Packages)
+	(cd SRPMS; apt-ftparchive sources . > Sources)
+	echo " done"
+
+	if [ -f $BASETGZ ] ; then
+	    echo $BASETGZ exists - updating
+	    sudo pbuilder --update --override-config --configfile $PWD/pbuilder/pbuilderrc-$DIST-$ARCH
+	else
+	    echo $BASETGZ does not exist - creating
+	    sudo pbuilder --create --configfile $PWD/pbuilder/pbuilderrc-$DIST-$ARCH
+	fi
 
 fi

@@ -3,7 +3,7 @@
 
 Name:           ocaml-lwt
 Version:        2.4.3
-Release:        1%{?dist}
+Release:        3%{?dist}
 Summary:        OCaml lightweight thread library
 
 Group:          Development/Libraries

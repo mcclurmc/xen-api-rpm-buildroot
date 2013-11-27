@@ -27,9 +27,10 @@ def changelog_from_spec(spec):
             author = name
             version = "%s-%s" % (spec.sourceHeader['version'], 
                                  spec.sourceHeader['release'])
+        version = version + "+xenservercore"
 
         package_name = mappkgname.map_package(hdr['name'])[0]
-        log += "%s (%s) UNRELEASED; urgency=low\n" % (package_name, version)
+        log += "%s (%s) experimental; urgency=low\n" % (package_name, version)
         log += "\n"
 
         text = re.sub( "^-", "*", text, flags=re.MULTILINE )
